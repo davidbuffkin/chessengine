@@ -1,6 +1,6 @@
 # Chess Engine
 
-This is a python-based chess engine. Currently it is only text-based, and runs a minimax algorithm to depth `difficulty`.
+This is a python-based chess engine. Currently it runs a minimax algorithm to depth `difficulty`, and takes advantage of alpha-beta pruning.
 Installation requires the python-chess module, which can be installed as
 >pip install python-chess
 
