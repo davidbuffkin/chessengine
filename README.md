@@ -10,6 +10,6 @@ and the pywebview module, as
 To run an interactive game with the engine, use 
 >python game.py -d [difficulty] -g
 
-or omit the `-g` for a CLI. Note with graphics, you still need to type moves in the CLI; there is no interactive GUI support as of yet.
+or omit the `-g` for a CLI. Difficulty greater than 4 will take longer than you wish to run. Note with graphics, you still need to type moves in the CLI; there is no interactive GUI support as of yet.
 
 There is more to come! I will be implementing some of the practices outlined <a href=http://www.frayn.net/beowulf/theory.html#transposition>here</a>.
