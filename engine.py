@@ -35,7 +35,7 @@ def evaluate(board, black):
 
 def search(board : chess.Board, black, depth, alpha, beta, top):
 
-    best = [-10000000, None]
+    best = [-10000000, []]
 
     moves = list(board.legal_moves)
     shuffle(moves) #TODO remove this when evaluate is better and for move ordering
@@ -48,29 +48,34 @@ def search(board : chess.Board, black, depth, alpha, beta, top):
         board.push(move)
 
         moveScore = None
+        pv = None
         if board.is_stalemate():
             board.pop()
             moveScore =  -1000000 if evaluate(board, black) > 0 == black else 0
             board.push(move)
         elif depth <= 0:
             moveScore = evaluate(board, black)
+            pv = []
         else:
-            moveScore = -search(board, not black, depth - 1, -beta, -alpha, False)[0]
+            moveScore, pv = search(board, not black, depth - 1, -beta, -alpha, False)
+            moveScore *= -1
         
         board.pop()
 
         #print(("    " * depth)+ "Move " + str(move) + " has value " + str(moveScore))
         
 
-        if moveScore > best[0]: best = [moveScore, move]
+        if moveScore > best[0]: best = [moveScore, [move] + pv]
         if best[0] > alpha: alpha = best[0]
-        if alpha >= beta: return [alpha, None]
+        if alpha >= beta: return [alpha, []]
     if top:
         printProgressBar(1, 1, "Done Thinking!")
         #print("Returning " + str(best))
     return best
 
 def getMove(board, difficulty):
-    return search(board, board.turn == chess.BLACK, difficulty, -math.inf, math.inf, True)[1]
+    bestScore, PV =  search(board, board.turn == chess.BLACK, difficulty, -math.inf, math.inf, True)
+    #print(PV)
+    return PV[0]
 
 
