@@ -8,6 +8,7 @@ from random import choice
 from engine import getMove
 import chess.svg
 import webview
+import time
 
 parser = argparse.ArgumentParser(description='Play a game of chess.')
 parser.add_argument('-d', '--difficulty', help='Engine difficulty', type=int, default=2)
@@ -47,6 +48,7 @@ def display_board(window):
 
 
 def game_loop(window):
+    engineTimes = []
     if args.graphics:
         window.resize(420, 420)
     display_board(window)
@@ -55,8 +57,11 @@ def game_loop(window):
         board.push(move)
         display_board(window)
         if board.is_game_over(): break
+        t = time.time()
         move = getEngineMove()
+        engineTimes += [time.time() - t]
         board.push(move)
+        print(f"Engine moves {move} ({engineTimes[-1]:.1f} sec)\n")
         display_board(window)
         
     if board.is_stalemate():
@@ -68,6 +73,7 @@ def game_loop(window):
             print("White wins.")
         else:
             print("Black wins.")
+    print(f"Average engine time: {sum(engineTimes) / len(engineTimes):.1f} seconds")
 
 
 if args.graphics:

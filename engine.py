@@ -23,22 +23,98 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
         print()
 
 
-values = {'P' : 100, 'R' : 500, 'N' : 300, 'B' : 300, 'Q' : 900, 'K' : 0, 'k' : 0,\
-          'p' : -100, 'r' : -500, 'n' : -300, 'b' : -300, 'q' : -900, "\n" : 0, "." : 0, " " : 0}
+
 
 
 def evaluate(board, black):
     if board.is_checkmate():
         return 1000000 if (board.turn == chess.WHITE) == black else -1000000
-    return (-1 if black else 1) * sum([values[c] for c in str(board)])
+    #return (-1 if black else 1) * sum([values[c] for c in str(board)])
+    boardString = str(board).replace(" ","").replace("\n", "")
+    value = 0
+    for i in range(64):
+        piece = str(boardString)[i]
+        if piece == ".": continue
+        number = 8 - i // 8
+        letter = i % 8 + 1
+        if piece == "P":
+            value += 100 + number * 1.5
+        elif piece == "p":
+            value -= 100 + (9 - number) * 1.5
+        elif piece == "R":
+            value += 500
+        elif piece == "r":
+            value -= 500
+        elif piece == "N":
+            if letter > 4:
+                letter = 9 - letter
+            if number > 4:
+                number = 9 - number
+            value += 300 + (letter + number) * 3
+        elif piece == "n":
+            if letter > 4:
+                letter = 9 - letter
+            if number > 4:
+                number = 9 - number
+            value -= 300 + (letter + number) * 3
+        elif piece == "B":
+            value += 300
+            if(letter + number) % 2 == 0:
+                #light square. implement better later
+                if letter == number:
+                    value += 50
+            else:
+                #dark square
+                if abs(letter - number) == 7:
+                    value += 50
+        elif piece == "b":
+            value -= 300
+            if(letter + number) % 2 == 0:
+                #light square. implement better later
+                if letter == number:
+                    value -= 50
+            else:
+                #dark square
+                if abs(letter - number) == 7:
+                    value -= 50
+        elif piece == "Q":
+            value += 900
+        elif piece == "q":
+            value -= 900
+        elif piece == "K":
+            letter = abs(letter - 4)
+            if number == 1:
+                value += 5 * letter
+            elif number == 2:
+                value += 3 * letter
+        elif piece == "k":
+            letter = abs(letter - 5)
+            if number == 8:
+                value -= 5 * letter
+            elif number == 7:
+                value -= 3 * letter
+        else:
+            raise NameError(f"Piece \'{piece}\' not recognized.")
+        
+    return value * (-1 if black else 1)
 
 
+
+lastBest = None
 def search(board : chess.Board, black, depth, alpha, beta, top):
+    global lastBest
 
     best = [-10000000, []]
 
     moves = list(board.legal_moves)
-    shuffle(moves) #TODO remove this when evaluate is better and for move ordering
+    if len(moves) == 0: return [evaluate(board, black), []]
+    
+    #Ordering
+    if lastBest:
+        if lastBest in moves:
+            moves.remove(lastBest)
+            #shuffle(moves)
+            moves = [lastBest] + moves
     
 
     for i, move in enumerate(moves):
@@ -62,9 +138,6 @@ def search(board : chess.Board, black, depth, alpha, beta, top):
         
         board.pop()
 
-        #print(("    " * depth)+ "Move " + str(move) + " has value " + str(moveScore))
-        
-
         if moveScore > best[0]: best = [moveScore, [move] + pv]
         if best[0] > alpha: alpha = best[0]
         if alpha >= beta: return [alpha, []]
@@ -74,8 +147,11 @@ def search(board : chess.Board, black, depth, alpha, beta, top):
     return best
 
 def getMove(board, difficulty):
+    global lastBest
     bestScore, PV =  search(board, board.turn == chess.BLACK, difficulty, -math.inf, math.inf, True)
-    #print(PV)
+    if len(PV) >= 3:
+        lastBest = PV[2]
+    #print([str(m) for m in PV])
     return PV[0]
 
 
