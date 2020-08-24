@@ -35,7 +35,7 @@ def evaluate(board, black):
 
 def search(board : chess.Board, black, depth, alpha, beta, top):
 
-    best = [-math.inf, None]
+    best = [-10000000, None]
 
     moves = list(board.legal_moves)
     shuffle(moves) #TODO remove this when evaluate is better and for move ordering
@@ -59,7 +59,8 @@ def search(board : chess.Board, black, depth, alpha, beta, top):
         
         board.pop()
 
-        moveScore += random()  - .5
+        #print(("    " * depth)+ "Move " + str(move) + " has value " + str(moveScore))
+        
 
         if moveScore > best[0]: best = [moveScore, move]
         if best[0] > alpha: alpha = best[0]

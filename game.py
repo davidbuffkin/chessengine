@@ -10,7 +10,7 @@ import chess.svg
 import webview
 
 parser = argparse.ArgumentParser(description='Play a game of chess.')
-parser.add_argument('-d', '--difficulty', help='Engine difficulty (0 for random)', type=int, default=0)
+parser.add_argument('-d', '--difficulty', help='Engine difficulty', type=int, default=2)
 #parser.add_argument('-b', '--black', help='Play as black', action='store_true')
 parser.add_argument('-g', '--graphics', help='Display a graphic of the game', action='store_true')
 args = parser.parse_args()
@@ -32,8 +32,8 @@ def getRandomMove():
     return choice(list(board.legal_moves))
 
 def getEngineMove():
-    if args.difficulty == 0:
-        return getRandomMove()
+    #if args.difficulty == 0:
+      #  return getRandomMove()
     move = getMove(board, args.difficulty)
     if not move:
         return getRandomMove()
@@ -54,8 +54,8 @@ def game_loop(window):
         move = getPlayerMove()
         board.push(move)
         display_board(window)
+        if board.is_game_over(): break
         move = getEngineMove()
-        if not move: break
         board.push(move)
         display_board(window)
         
